@@ -1,0 +1,38 @@
+{% extends 'chat/base.html' %}
+
+{% block title %}Anonymous Chats{% endblock %}
+
+{% block css  %}
+<style>
+    .create_lobby a{
+    color: #20af2a;
+    text-decoration: none;
+  }
+  
+  .create_lobby a:hover{
+    text-decoration: underline;
+  }
+</style>
+
+{% endblock %}
+
+{% block h1 %} Welcome to Anonymous Chats! {% endblock %}
+{% block h4 %} {{message}} {% endblock %}
+
+{% block div %} 
+<form method="post" action="{% url 'lobby' %}"> {% csrf_token %}
+    <label for="name">Just enter a made up name here:</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="lobbyCode">Enter lobby code if you got one:</label>
+    <input type="text" id="lobbycode" name="lobbycode" required>
+
+    <button type="submit">Enter Lobby</button>
+</form>
+
+<div class="create_lobby">
+      <p>Don't have a lobby code? Well.... <a href="{% url 'create_lobby' %}">create your own.</a></p>
+
+    </div>
+{% endblock %}
+

@@ -1,0 +1,41 @@
+{% extends 'chat/base.html' %}
+
+{% block title %}Anonymous Chats{% endblock %}
+
+{% block css  %}
+<style>
+     .lobbycode a{
+    color: #20af2a;
+    text-decoration: none;
+  }
+  
+  .lobbycode a:hover{
+    text-decoration: underline;
+  }
+    
+</style>
+
+{% endblock %}
+
+{% block h1 %} Create your own lobby {% endblock %}
+
+{% block div %} 
+<form method="post" action="{% url 'create_lobby' %}"> {% csrf_token %}
+    
+    <label for="lobby_name">Name your lobby:</label>
+    <input type="text" id="lobby_name" name="lobby_name" value="{{ request.POST.lobby_name }}" required>
+
+    <label for="members">Enter the number of members:</label>
+    <input type="number" id="members" name="members" min="2" max="30" placeholder="2 to 30" value="{{ request.POST.members }}" required>
+
+    <button type="submit">Done</button>
+
+</form>
+
+{% if lobby_code %}
+    <div class="lobbycode">
+        <p>Your lobby code: {{ lobby_code }}<br> Now go <a href="{% url 'index' %}">back</a> and enter your lobby.</p>
+    </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <title>
+            Lobby
+        </title>
+
+        <style>
+            body {
+                font-family: monospace;
+                background-color: #222;
+                margin: 0;
+                padding: 0;
+                
+                
+            }
+            
+            .chat-container {
+                max-width: 650px;
+                font-size: 20px;
+                color: #ffffff;
+                margin: 20px auto;
+                border: 3px double #ffffff;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                background-color: rgb(127, 173, 130);
+                border-radius: 25px;
+            }
+            
+            .chat-header {
+                background-color: #366d2b;
+                padding: 10px;
+                border:3px double #ffffff;
+                text-align: center;
+                color: #ffffff;
+                border-top-left-radius: 25px;
+                border-top-right-radius: 25px;
+            }
+            
+            .chat-messages {
+                padding: 10px;
+                max-height: 300px;
+                overflow-y: auto;
+                border-radius: 25px;
+            }
+      
+            .received{
+                text-align:right;
+                line-height: 15px;
+                padding-right: 5px;
+            }   
+            
+            .sent{
+                text-align:left;
+                line-height: 15px;
+                padding-left: 5px;
+            }
+
+            .user_name{
+                font-weight: bold;
+                font-style: italic;
+    
+            }
+
+            .chat-input {
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                border-top: 1px solid #ccc;
+                border-radius: 20px;
+            }
+            
+            .chat-input input {
+                flex: 1;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 25px;
+                border-bottom:3px solid #8f9b91;
+                width:  60%;
+                text-align: center;
+            }
+            
+            .chat-input button {
+                margin-left: 10px;
+                padding: 5px 10px;
+                padding-bottom: 2px;
+                background-color: #168158;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                border-radius: 20px;
+            }
+            
+            .chat-input button:hover {
+                background-color: #166146;
+            }
+      
+            </style>
+    </head>
+    <body>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>Welcome to room {{room_name}}!</h1>
+                <h2></h2>
+
+                <div  id="alerts"></div>
+                
+            </div>
+    
+            <div class="chat-messages" id="messages">
+                <!-- Chat messages will be added here dynamically -->
+            </div>
+    
+            <div class="chat-input"  >
+                <form id ='form'>
+                    <input type="text" class="form-control" id="textinput" name="message" placeholder="I know you will try your best to be kind...">
+                    <button type="submit" id="send-button">Send</button> 
+                </form>          
+            </div>
+
+    </div>
+
+        <script type = "text/javascript">
+
+            const user_name="{{user_name}}";
+            const lobbycode="{{lobbycode}}";
+
+            let url= `ws://${window.location.host}/ws/socket-server/${lobbycode}/`
+            
+            const chatSocket = new WebSocket(url)
+
+            chatSocket.onmessage = function(e){
+                let data = JSON.parse(e.data)
+
+                let messages = document.getElementById('messages');
+                let messageClass = (data.type=='chat' && data.user_name === user_name) ? 'received':'sent' ; 
+
+                if(data.type=='member_count')
+                {
+                    document.insertAdjacentHTML('beforeend',
+                        `<h2>Members: ${data.member}</h2>`);  
+                }
+
+                if(data.type=='connection_established')
+                {
+                    messages.insertAdjacentHTML('beforeend',
+                        `<div class="${messageClass}">
+                            <p class='user_name'>Nz:</p>
+                            ${data.message}
+                        </div>`);  
+                }
+                
+                else if(messageClass=='sent')
+                {
+                    messages.insertAdjacentHTML('beforeend',
+                        `<div class="${messageClass}">
+                            <p class='user_name'>${data.user_name}:</p>
+                            ${data.message}
+                        </div>`);
+                    }
+
+                else
+                {
+                    messages.insertAdjacentHTML('beforeend',
+                        `<div class="${messageClass}">
+                            <p class='user_name'>You:</p>
+                            ${data.message}
+                        </div>`); 
+                }
+                
+            };
+
+                
+        
+            let form = document.getElementById('form')
+            form.addEventListener('submit', (e)=> {
+                e.preventDefault()
+                let message = e.target.message.value
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'user_name':user_name
+                }))
+                form.reset()
+            })
+        </script>
+
+    </body>
+</html>
