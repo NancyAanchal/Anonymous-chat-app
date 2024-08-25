@@ -17,6 +17,11 @@ This is a real-time chat application built using Django Channels and WebSockets.
 - WebSockets
 - HTML/CSS/JavaScript
 
+## Instructions to Run
+ - git clone https://github.com/NancyAanchal/Anonymous-chat-app.git
+ - pip install -r requirements.txt
+ - python manage.py runserver
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
